@@ -86,6 +86,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     let lights = LightPlayer()
     let server = StatusServer()
     let sessions = SessionWatch()
+    let remote = RemoteLightBridge()
+    var remoteStatus = "远端：正在查找 VS Code 的 Linux"
     let speech = SpeechDictation()
     let locator = ConversationLocator()
     var activity: NSObjectProtocol?
@@ -97,6 +99,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     var listenItem: NSMenuItem!
     var lastItem: NSMenuItem!
     var tunnelItem: NSMenuItem!
+    var remoteItem: NSMenuItem!
     var toggleItem: NSMenuItem!
     var reminderItem: NSMenuItem!
     var languageItem: NSMenuItem!
@@ -155,7 +158,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         sessions.onEvent = { [weak self] cue, live in
             self?.applySignal(cue.signal, haptic: live)
         }
+        remote.onCue = { [weak self] cue, live in
+            self?.applySignal(cue.signal, haptic: live)
+        }
+        remote.onStatus = { [weak self] text in
+            self?.remoteStatus = text
+            self?.updateMenu()
+        }
         sessions.poll()
+        remote.poll()
         server.start()
         speech.preparePermissions()
         applyLight()
@@ -180,6 +191,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             guard let self else { return }
             if self.lightState.expire(now: Date()) { self.applyLight() }
             self.sessions.poll()
+            self.remote.poll()
             self.refreshDevices()
             let square = GCController.controllers().contains { $0.extendedGamepad?.buttonX.isPressed == true }
             let front = NSWorkspace.shared.frontmostApplication
@@ -204,6 +216,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         phaseItem = menu.addItem(withTitle: "Codex：空闲", action: nil, keyEquivalent: "")
         listenItem = menu.addItem(withTitle: "听写：中文", action: nil, keyEquivalent: "")
         tunnelItem = menu.addItem(withTitle: "正在监听", action: nil, keyEquivalent: "")
+        remoteItem = menu.addItem(withTitle: remoteStatus, action: nil, keyEquivalent: "")
         lastItem = menu.addItem(withTitle: "最近动作：无", action: nil, keyEquivalent: "")
         menu.addItem(.separator())
         statusItem.menu = menu
@@ -277,6 +290,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             listenItem.title = "听写：\(speech.language.title)，松开后粘贴进 Codex 输入框"
         }
         tunnelItem.title = listenerStatus
+        remoteItem?.title = remoteStatus
         languageItem?.title = "听写语言：\(speech.language.title)（△ 切换）"
         statusItem.button?.title = banner.map { "🎮 \($0)" } ?? (enabled ? "🎮" : "🎮 ⏸")
         statusItem.button?.toolTip = "DS Codex SSH · \(lightState.phase.title)"
@@ -773,6 +787,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         housekeepingTimer?.cancel()
         pollTimer?.cancel()
         lights.stop()
+        remote.stop()
         server.stop()
         for engine in activeEngines { engine.stop() }
         if let activity { ProcessInfo.processInfo.endActivity(activity) }

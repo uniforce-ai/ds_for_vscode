@@ -6,11 +6,13 @@ mkdir -p "$app_path/Contents/MacOS" "$PWD/build/module-cache"
 xcrun swiftc -target "$(uname -m)-apple-macosx14.0" -swift-version 5 -O -module-cache-path "$PWD/build/module-cache" \
   -framework AppKit -framework ApplicationServices -framework GameController -framework CoreHaptics \
   -framework AVFoundation -framework Speech -framework Network -framework IOKit \
-  Sources/AppLog.swift Sources/LightPattern.swift Sources/HookSignal.swift Sources/CodexPhase.swift Sources/SessionCue.swift Sources/HTTPRequest.swift \
+  Sources/AppLog.swift Sources/LightPattern.swift Sources/HookSignal.swift Sources/CodexPhase.swift Sources/SessionCue.swift Sources/RemoteLightBridge.swift Sources/HTTPRequest.swift \
   Sources/HoldState.swift Sources/TriggerGesture.swift Sources/StickNavigation.swift Sources/ConversationGeometry.swift \
   Sources/SendPolicy.swift Sources/DualSenseInput.swift Sources/DualSenseLight.swift Sources/StatusServer.swift Sources/SpeechDictation.swift \
   Sources/ConversationLocator.swift Sources/AppMain.swift \
   -o "$app_path/Contents/MacOS/DSCodexSSH"
+mkdir -p "$app_path/Contents/Resources"
+cp hooks/remote-session-follow.py "$app_path/Contents/Resources/remote-session-follow.py"
 cp Info.plist "$app_path/Contents/Info.plist"
 xattr -dr com.apple.FinderInfo "$app_path" 2>/dev/null || true
 bash "$PWD/script/setup_signing.sh"

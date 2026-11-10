@@ -126,4 +126,10 @@ bluetooth[9] = 0x28
 precondition(DualSenseInput.parse(bluetooth)?.buttons == [.cross])
 precondition(DualSenseInput.parse([0x02, 0, 0]) == nil)
 print("Controller report passed.")
+let authority = "ssh-remote+7b22686f73744e616d65223a223137322e31362e32302e313632222c2275736572223a22646170656e67227d"
+let remote = RemoteEndpoint.parse(authority: authority)
+precondition(remote == RemoteEndpoint(user: "dapeng", host: "172.16.20.162"))
+precondition(RemoteEndpoint.parse(authority: "ssh-remote+dapeng@dev.example") == RemoteEndpoint(user: "dapeng", host: "dev.example"))
+precondition(RemoteEndpoint.parse(authority: "local") == nil)
+print("Remote endpoint passed.")
 print("All local checks passed. No controller, SSH, or VS Code required.")
