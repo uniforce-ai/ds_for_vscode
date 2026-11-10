@@ -2,6 +2,8 @@
 
 用 PS5 DualSense 操作 Mac 上的 VS Code，并把远程 Linux 上 Codex 的编程状态显示在手柄灯条上。听写支持中文和 English。
 
+![DS Codex SSH 手柄按键与灯效](docs/assets/controller-map.png)
+
 按键只在 VS Code 位于前台时发送。Codex 插件的界面在 Mac 上，所以快捷键打到本机 VS Code 进程。灯条也由本机程序写。Linux 只负责在回合状态变化时，经 SSH 反向转发通知这只程序。
 
 ## 构建
