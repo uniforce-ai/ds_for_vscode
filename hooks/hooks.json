@@ -1,0 +1,60 @@
+{
+  "description": "把 Codex 回合状态转发到 Mac 上的 DS Codex SSH，用来驱动 DualSense 灯条。不读取回复正文。",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.codex/ds-codex-light.sh\"",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.codex/ds-codex-light.sh\"",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.codex/ds-codex-light.sh\"",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "Interrupt": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.codex/ds-codex-light.sh\"",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.codex/ds-codex-light.sh\"",
+            "timeout": 3
+          }
+        ]
+      }
+    ]
+  }
+}
